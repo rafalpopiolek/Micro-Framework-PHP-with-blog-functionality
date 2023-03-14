@@ -4,14 +4,32 @@ declare(strict_types = 1);
 
 namespace App;
 
+use PDO;
+use PDOException;
+
+/**
+ * @mixin PDO
+ */
 class DatabaseConnection
 {
-    public function __construct(private Config $dbConfig)
+    private PDO $pdo;
+
+    public function __construct(array $dbConfig)
     {
+        $dsn = $dbConfig['driver'] . ':host=' . $dbConfig['host'] . ';dbname=' . $dbConfig['database'];
+        try {
+            $this->pdo = new PDO(
+                $dsn,
+                $dbConfig['user'],
+                $dbConfig['password']
+            );
+        } catch (PDOException $e) {
+            throw new PDOException($e->getMessage());
+        }
     }
 
-    public function connect(): void
+    public function __call(string $name, array $arguments)
     {
-        echo "Connected to database!";
+        call_user_func_array([$this->pdo, $name], $arguments);
     }
 }

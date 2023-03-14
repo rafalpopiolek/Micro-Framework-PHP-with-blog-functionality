@@ -8,13 +8,13 @@ use App\DatabaseConnection;
 
 readonly class HomeController
 {
-    public function __construct(private readonly DatabaseConnection $connection)
+    public function __construct(private readonly DatabaseConnection $db)
     {
     }
 
     public function index(): void
     {
-        $this->connection->connect();
+
     }
 
     public function update(): void

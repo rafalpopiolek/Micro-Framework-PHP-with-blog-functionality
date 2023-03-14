@@ -6,6 +6,7 @@ namespace App;
 
 use App\Exceptions\RouteNotFoundException;
 use Exception;
+use PDOException;
 
 class Application
 {
@@ -27,8 +28,11 @@ class Application
             http_response_code(404);
             require VIEW_PATH . '/errors/404.php';
             die();
+        } catch (PDOException) {
+            http_response_code(503);
+            require VIEW_PATH . '/errors/server-error.php';
+            die();
         } catch (Exception $e) {
-            dd($e);
         }
     }
 }
