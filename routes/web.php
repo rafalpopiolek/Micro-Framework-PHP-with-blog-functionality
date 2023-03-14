@@ -9,11 +9,11 @@ function defineRoutes(Router $router): void
 {
     $router
         ->get('/', function () {
-            dd($_SERVER);
+//            dd($_SERVER);
         })
         ->get('/?action=login', function () {
             echo "Login";
         })
-        ->post('/?action=register', [HomeController::class, 'index'])
+        ->get('/?action=register', [HomeController::class, 'index'])
         ->put('/?action=update', [HomeController::class, 'update']);
 }

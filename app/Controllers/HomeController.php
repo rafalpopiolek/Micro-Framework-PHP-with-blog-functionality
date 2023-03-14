@@ -4,19 +4,21 @@ declare(strict_types = 1);
 
 namespace App\Controllers;
 
-class HomeController
+use App\DatabaseConnection;
+
+readonly class HomeController
 {
-    public function index(array $data): void
+    public function __construct(private readonly DatabaseConnection $connection)
     {
-        header("Content-Type: application/json");
-        echo json_encode($data);
-        exit();
     }
 
-    public function update(array $data): void
+    public function index(): void
     {
-        header("Content-Type: application/json");
-        echo json_encode($data);
-        exit();
+        $this->connection->connect();
+    }
+
+    public function update(): void
+    {
+        //
     }
 }

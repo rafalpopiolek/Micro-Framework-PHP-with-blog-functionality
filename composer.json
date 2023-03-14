@@ -5,5 +5,7 @@
       "App\\": "app/"
     }
   },
-  "require": {}
+  "require": {
+    "php-di/php-di": "^7.0"
+  }
 }

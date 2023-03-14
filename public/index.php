@@ -14,12 +14,21 @@ require __DIR__ . '/../routes/web.php';
 use App\Application;
 use App\Config;
 use App\Router;
+use DI\Container;
+
+$container = new Container();
+
+$builder = new DI\ContainerBuilder();
+
+$builder->addDefinitions(__DIR__ . '/../container/container-bindings.php');
+
+$container = $builder->build();
 
 const VIEW_PATH = __DIR__ . '/../templates';
 
 $config = require __DIR__ . '/../configuration.php';
 
-$router = new Router();
+$router = new Router($container);
 
 defineRoutes($router);
 

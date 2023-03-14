@@ -6,9 +6,14 @@ namespace App;
 
 use App\Enums\RequestMethod;
 use App\Exceptions\RouteNotFoundException;
+use DI\Container;
 
 class Router
 {
+    public function __construct(private readonly Container $container)
+    {
+    }
+
     private array $routes = [];
 
     public function register(RequestMethod $reqMethod, string $route, callable|array $action): self
@@ -72,10 +77,11 @@ class Router
             [$class, $method] = $action;
 
             if (class_exists($class)) {
-                $class = new $class();
+//                $class = new $class();
+                $class = $this->container->get($class);
 
                 if (method_exists($class, $method)) {
-                    return call_user_func_array([$class, $method], [$_REQUEST]);
+                    return call_user_func_array([$class, $method], []);
                 }
             }
         }
