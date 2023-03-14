@@ -2,9 +2,12 @@
 
 declare(strict_types = 1);
 
+use App\Enums\Environment;
+
 return [
     'app' => [
-        'name' => 'Venture - Recruitment Task',
+        'name'        => 'Venture - Recruitment Task',
+        'environment' => Environment::LOCAL->value,
     ],
     'db'  => [
         'driver'   => 'mysql',

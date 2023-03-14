@@ -7,11 +7,16 @@ namespace App;
 use App\Enums\RequestMethod;
 use App\Exceptions\RouteNotFoundException;
 use DI\Container;
+use DI\DependencyException;
+use DI\NotFoundException;
+use ReflectionException;
+use ReflectionMethod;
 
 class Router
 {
-    public function __construct(private readonly Container $container)
-    {
+    public function __construct(
+        private readonly Container $container,
+    ) {
     }
 
     private array $routes = [];
@@ -49,7 +54,10 @@ class Router
     }
 
     /**
+     * @throws DependencyException
+     * @throws NotFoundException
      * @throws RouteNotFoundException
+     * @throws ReflectionException
      */
     public function resolve(string $requestUri, string $requestMethod): mixed
     {
@@ -58,12 +66,11 @@ class Router
         $route = explode('?', $requestUri)[0];
         $getAction = $_GET['action'] ?? null;
 
-        if (! $getAction) {
-            $action = $this->routes[$requestMethod][$route] ?? null;
-        } else {
-            $path = $route . '?action=' . $getAction;
-            $action = $this->routes[$requestMethod][$path] ?? null;
+        if ($getAction) {
+            $route = $route . '?action=' . $getAction;
         }
+
+        $action = $this->routes[$requestMethod][$route] ?? null;
 
         if (! $action) {
             throw new RouteNotFoundException("Route Not Found | 404");
@@ -81,11 +88,39 @@ class Router
                 $class = $this->container->get($class);
 
                 if (method_exists($class, $method)) {
-                    return call_user_func_array([$class, $method], []);
+                    $reflectionMethod = new ReflectionMethod($class, $method);
+
+                    $parameters = $reflectionMethod->getParameters();
+
+                    $dependencies = $this->getMethodDependencies($parameters);
+
+                    return $reflectionMethod->invokeArgs($class, $dependencies);
                 }
             }
         }
 
         throw new RouteNotFoundException("Route Not Found | 404");
+    }
+
+    /**
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
+    private function getMethodDependencies(array $parameters): array
+    {
+        $dependencies = [];
+
+        foreach ($parameters as $parameter) {
+            $dependency = $parameter->getType()->getName();
+
+            if ($dependency) {
+                $dependencies[] = $this->container->get($dependency);
+            } elseif ($parameter->isDefaultValueAvailable()) {
+                $dependencies[] = $parameter->getDefaultValue();
+            } else {
+                throw new NotFoundException("Dependency not found for parameter: " . $parameter->getName());
+            }
+        }
+        return $dependencies;
     }
 }
