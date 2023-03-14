@@ -9,33 +9,27 @@ error_reporting(E_ALL);
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../helpers.php';
+require __DIR__ . '/../routes/web.php';
 
-use App\Router;
 use App\Application;
-use App\Controllers\HomeController;
-use App\Exceptions\RouteNotFoundException;
+use App\Config;
+use App\Router;
 
-$application = new Application();
+const VIEW_PATH = __DIR__ . '/../templates';
+
+$config = require __DIR__ . '/../configuration.php';
 
 $router = new Router();
 
-try {
-    $router
-        ->get('/', function () {
-            dd($_SERVER);
-        })
-        ->get('/?action=login', function () {
-            echo "Login";
-        })
-        ->post('/?action=register', [HomeController::class, 'index'])
-        ->put('/?action=update', [HomeController::class, 'update']);
+defineRoutes($router);
 
-    $router->resolve(
-        requestUri: $_SERVER['REQUEST_URI'],
-        requestMethod: $_POST['_method'] ?? $_SERVER['REQUEST_METHOD']
-    );
-} catch (RouteNotFoundException $e) {
-    dd($e);
-} catch (Exception $e) {
-    dd($e);
-}
+$app = new Application(
+    $router,
+    new Config($config),
+    [
+        'uri'    => $_SERVER['REQUEST_URI'],
+        'method' => $_POST['_method'] ?? $_SERVER['REQUEST_METHOD']
+    ],
+);
+
+$app->init();
