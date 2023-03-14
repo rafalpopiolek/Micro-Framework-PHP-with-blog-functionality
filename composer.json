@@ -1,0 +1,9 @@
+{
+  "name": "rafl00/venture-test",
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  },
+  "require": {}
+}
