@@ -15,6 +15,7 @@ class HomeController
 
     public function index(Request $request): void
     {
+        dd($request);
     }
 
     public function update(Request $request): void

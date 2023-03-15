@@ -11,6 +11,7 @@ use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
 use ReflectionException;
+use ReflectionFunction;
 use ReflectionMethod;
 
 class Router
@@ -79,7 +80,19 @@ class Router
         }
 
         if (is_callable($action)) {
-            return call_user_func($action);
+            // Try to call this method and inject dependencies
+            $reflectionFunction = new ReflectionFunction($action);
+
+            // Get function parameters using Reflection
+            $parameters = $reflectionFunction->getParameters();
+
+            try {
+                $dependencies = $this->getDependencies($parameters);
+            } catch (DependencyException|NotFoundException $e) {
+                throw new DIContainerException($e->getMessage());
+            }
+
+            return $reflectionFunction->invokeArgs($dependencies);
         }
 
         if (is_array($action)) {
@@ -99,7 +112,7 @@ class Router
                 $parameters = $reflectionMethod->getParameters();
 
                 try {
-                    $dependencies = $this->getMethodDependencies($parameters);
+                    $dependencies = $this->getDependencies($parameters);
                 } catch (DependencyException|NotFoundException $e) {
                     throw new DIContainerException($e->getMessage());
                 }
@@ -119,7 +132,7 @@ class Router
      * @throws DependencyException
      * @throws NotFoundException
      */
-    private function getMethodDependencies(array $parameters): array
+    private function getDependencies(array $parameters): array
     {
         $dependencies = [];
 

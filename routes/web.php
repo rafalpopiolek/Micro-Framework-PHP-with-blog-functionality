@@ -9,8 +9,8 @@ use App\Router;
 function defineRoutes(Router $router): void
 {
     $router
-        ->get('/', function () {
-//            dd($_SERVER);
+        ->get('/', function (\App\Request $request) {
+            dd($request);
         })
         ->get('/?action=login', function () {
             echo "Login";

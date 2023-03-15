@@ -9,13 +9,14 @@ use App\Exceptions\RouteNotFoundException;
 use Exception;
 use PDOException;
 
-readonly class Application
+final readonly class Application
 {
     public function __construct(
         private Router $router,
         private Config $config,
         private array $request,
     ) {
+        defineRoutes($this->router);
     }
 
     /**
@@ -24,8 +25,6 @@ readonly class Application
      */
     public function init(): void
     {
-        defineRoutes($this->router);
-
         try {
             $this->router->resolve(
                 requestUri: $this->request['uri'],
