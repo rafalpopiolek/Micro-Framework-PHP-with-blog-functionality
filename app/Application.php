@@ -11,14 +11,15 @@ use PDOException;
 class Application
 {
     public function __construct(
-        protected Router $router,
-        protected Config $config,
-        protected array $request,
+        private Router $router,
+        private Config $config,
+        private array $request,
     ) {
     }
 
     public function init(): void
     {
+        defineRoutes($this->router);
         try {
             $this->router->resolve(
                 requestUri: $this->request['uri'],
