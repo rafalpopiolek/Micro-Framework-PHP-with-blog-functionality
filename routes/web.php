@@ -5,6 +5,7 @@ declare(strict_types = 1);
 use App\Controllers\HomeController;
 use App\Router;
 
+// All your routes put here
 function defineRoutes(Router $router): void
 {
     $router
@@ -15,5 +16,5 @@ function defineRoutes(Router $router): void
             echo "Login";
         })
         ->get('/?action=register', [HomeController::class, 'index'])
-        ->put('/?action=update', [HomeController::class, 'update']);
+        ->post('/?action=update', [HomeController::class, 'update']);
 }

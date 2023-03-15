@@ -4,7 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
-class User
-{
+use App\BaseModel;
 
+class User extends BaseModel
+{
+    public function index()
+    {
+    }
 }

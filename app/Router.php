@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App;
 
 use App\Enums\RequestMethod;
+use App\Exceptions\DIContainerException;
 use App\Exceptions\RouteNotFoundException;
 use DI\Container;
 use DI\DependencyException;
@@ -54,16 +55,17 @@ class Router
     }
 
     /**
-     * @throws DependencyException
-     * @throws NotFoundException
      * @throws RouteNotFoundException
+     * @throws DIContainerException
      * @throws ReflectionException
      */
     public function resolve(string $requestUri, string $requestMethod): mixed
     {
         $requestMethod = strtoupper($requestMethod);
 
+        // Get first part of request uri without any GET param
         $route = explode('?', $requestUri)[0];
+        // Get `action` query param
         $getAction = $_GET['action'] ?? null;
 
         if ($getAction) {
@@ -83,19 +85,27 @@ class Router
         if (is_array($action)) {
             [$class, $method] = $action;
 
-            if (class_exists($class)) {
-//                $class = new $class();
+            // Try to initialize a class using container
+            try {
                 $class = $this->container->get($class);
+            } catch (DependencyException|NotFoundException $e) {
+                throw new RouteNotFoundException("Class `{$class}` Not Found");
+            }
 
-                if (method_exists($class, $method)) {
-                    $reflectionMethod = new ReflectionMethod($class, $method);
+            if (method_exists($class, $method)) {
+                // Use reflection to get method parameters
+                $reflectionMethod = new ReflectionMethod($class, $method);
 
-                    $parameters = $reflectionMethod->getParameters();
+                $parameters = $reflectionMethod->getParameters();
 
+                try {
                     $dependencies = $this->getMethodDependencies($parameters);
-
-                    return $reflectionMethod->invokeArgs($class, $dependencies);
+                } catch (DependencyException|NotFoundException $e) {
+                    throw new DIContainerException($e->getMessage());
                 }
+
+                // Call this method and pass in all necessary dependencies
+                return $reflectionMethod->invokeArgs($class, $dependencies);
             }
         }
 
@@ -103,6 +113,9 @@ class Router
     }
 
     /**
+     * Accept all method parameters
+     * Try to get dependencies from container
+     *
      * @throws DependencyException
      * @throws NotFoundException
      */

@@ -4,11 +4,12 @@ declare(strict_types = 1);
 
 namespace App;
 
+use App\Exceptions\DIContainerException;
 use App\Exceptions\RouteNotFoundException;
 use Exception;
 use PDOException;
 
-class Application
+readonly class Application
 {
     public function __construct(
         private Router $router,
@@ -17,24 +18,42 @@ class Application
     ) {
     }
 
+    /**
+     *  This method accept routes from routes/web.php
+     *  then we resolve the route and catch any exceptions
+     */
     public function init(): void
     {
         defineRoutes($this->router);
+
         try {
             $this->router->resolve(
                 requestUri: $this->request['uri'],
                 requestMethod: $this->request['method']
             );
-        } catch (RouteNotFoundException) {
+        } catch (RouteNotFoundException $e) {
+            if (isDevelopment($this->config->app['environment'])) {
+                dd($e->getMessage());
+            }
+
             http_response_code(404);
             require VIEW_PATH . '/errors/404.php';
             die();
-        } catch (PDOException $e) {
-            dd($e->getMessage());
+        } catch (DIContainerException $e) {
+            if (isDevelopment($this->config->app['environment'])) {
+                dd($e);
+            }
+            http_response_code(404);
+            require VIEW_PATH . '/errors/404.php';
+            die();
+        } catch (PDOException|Exception $e) {
+            if (isDevelopment($this->config->app['environment'])) {
+                dd($e->getMessage());
+            }
+
             http_response_code(503);
             require VIEW_PATH . '/errors/server-error.php';
             die();
-        } catch (Exception $e) {
         }
     }
 }

@@ -9,18 +9,16 @@ use App\Request;
 
 class HomeController
 {
-    public function __construct(
-        private readonly DatabaseConnection $connection,
-    ) {
+    public function __construct(private readonly DatabaseConnection $connection)
+    {
     }
 
     public function index(Request $request): void
     {
-        $query = $this->connection->query("SELECT * FROM users");
     }
 
     public function update(Request $request): void
     {
-        dd($request->putPatchData());
+        dd($request->getPostParameters());
     }
 }
