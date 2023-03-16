@@ -15,4 +15,6 @@ interface BlogRepositoryInterface
     public function getPaginated(DataTableParametersDto $params);
 
     public function count(): int;
+
+    public function delete(int $id): bool;
 }

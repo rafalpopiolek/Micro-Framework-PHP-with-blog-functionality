@@ -14,5 +14,6 @@ function defineRoutes(Router $router): void
         ->get('/blog', [BlogController::class, 'index'])
         ->get('/blog/?action=create', [BlogController::class, 'create'])
         ->post('/blog', [BlogController::class, 'store'])
-        ->get('/blog/?action=load', [BlogController::class, 'load']);
+        ->get('/blog/?action=load', [BlogController::class, 'load'])
+        ->delete('/blog/?action=delete', [BlogController::class, 'destroy']);
 }

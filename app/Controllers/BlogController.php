@@ -19,11 +19,7 @@ readonly class BlogController
 
     public function index(): View
     {
-        $blogs = $this->blogRepository->getAll();
-
-        return View::make('blog/index', [
-            'blogs' => $blogs,
-        ]);
+        return View::make('blog/index');
     }
 
     public function load(Request $request): void
@@ -51,6 +47,17 @@ readonly class BlogController
     {
         if ($this->blogRepository->create(
             $request->postParam('text')
+        )) {
+            return View::make('blog/index');
+        }
+
+        return View::make('blog/index');
+    }
+
+    public function destroy(Request $request): View
+    {
+        if ($this->blogRepository->delete(
+            (int)$request->postParam('id')
         )) {
             return View::make('blog/index');
         }

@@ -56,9 +56,13 @@ include_once VIEW_PATH . '/layouts/sections/footer.php' ?>
                         <button class="ms-2 btn btn-outline-primary btn-sm edit-category-btn">
                             Edit
                         </button>&nbsp;
-                        <button type="submit" class="btn btn-outline-primary btn-sm delete-category-btn">
-                            Delete
-                        </button>
+                        <form action="/blog/?action=delete" method="POST">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="id" value="${row.id}">
+                            <button type="submit" class="btn btn-outline-primary btn-sm delete-category-btn">
+                                Delete
+                            </button>
+                        </form>
                     </div>
                 `
                 }

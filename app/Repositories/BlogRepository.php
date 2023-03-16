@@ -74,4 +74,13 @@ readonly class BlogRepository implements BlogRepositoryInterface
 
         return $result->fetchColumn();
     }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->connection->prepare("DELETE FROM blog WHERE id = :id");
+
+        return $stmt->execute([
+            ':id' => $id
+        ]);
+    }
 }
