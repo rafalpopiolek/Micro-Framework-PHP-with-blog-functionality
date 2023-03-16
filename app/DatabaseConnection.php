@@ -36,6 +36,6 @@ class DatabaseConnection
 
     public function __call(string $name, array $arguments)
     {
-        call_user_func_array([$this->pdo, $name], $arguments);
+        return call_user_func_array([$this->pdo, $name], $arguments);
     }
 }

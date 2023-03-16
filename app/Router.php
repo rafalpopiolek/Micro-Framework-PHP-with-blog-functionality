@@ -24,6 +24,11 @@ class Router
     ) {
     }
 
+    public function get(string $route, callable|array $action): self
+    {
+        return $this->register(RequestMethod::GET, $route, $action);
+    }
+
     public function post(string $route, callable|array $action): self
     {
         return $this->register(RequestMethod::POST, $route, $action);
@@ -157,10 +162,5 @@ class Router
             }
         }
         return $dependencies;
-    }
-
-    public function get(string $route, callable|array $action): self
-    {
-        return $this->register(RequestMethod::GET, $route, $action);
     }
 }

@@ -18,7 +18,7 @@ readonly class Request
         return $this->get[$name] ?? null;
     }
 
-    public function getPostParam(string $name): mixed
+    public function postParam(string $name): mixed
     {
         return $this->post[$name] ?? null;
     }

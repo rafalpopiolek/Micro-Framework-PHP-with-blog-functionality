@@ -27,10 +27,4 @@ $container = require BASE_PATH . 'container/container.php';
 $app = $container->get(Application::class);
 
 // Bootstrap application
-
-// TODO: Pomyśleć jak rozwiązać sprawę z modelami
-// TODO: Może bez nich tylko repozytoria i serwisy?
-// TODO: Zaimplmentować obsługę widoków - taka jak z PMS - Uni
-// TOOD: Jak narazie tyle - nie przychodzi mi nic do głowy! :/
-
 $app->init();
