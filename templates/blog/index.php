@@ -8,30 +8,15 @@
     </div>
 
     <div class="mt-3">
-        <table class="table">
+        <table id="blogsTable">
             <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">UserId</th>
-                <th scope="col">Text</th>
-                <th scope="col">Actions</th>
+                <th>User ID</th>
+                <th>Text</th>
+                <th>Actions</th>
             </tr>
             </thead>
-            <tbody>
-            <?php
-            $i = 1;
-            foreach ($this->data as $blog): ?>
-                <tr>
-                    <th scope="row"><?= $i ?></th>
-                    <td><?= $blog['userid'] ?></td>
-                    <td><?= $blog['text'] ?></td>
-                    <td>Delete</td>
-                </tr>
-                <?php
-                $i++;
-            endforeach;
-            ?>
-            </tbody>
+            <tbody></tbody>
         </table>
 
     </div>

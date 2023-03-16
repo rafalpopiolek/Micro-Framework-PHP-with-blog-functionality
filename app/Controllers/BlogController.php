@@ -19,7 +19,29 @@ class BlogController
         $blogs = $this->blogRepository->getAll();
 
         return View::make('blog/index', [
+            'blogs' => $blogs,
+        ]);
+    }
+
+    public function load(Request $request): void
+    {
+        $params = $request->getQueryParameters();
+
+        $blogs = $this->blogRepository->getPaginated(
+            start: (int)$params['start'],
+            length: (int)$params['length'],
+            search: $params['search']['value'],
+            orderBy: $params['columns'][$params['order'][0]['column']]['data'],
+            orderDir: $params['order'][0]['dir'],
+        );
+
+        $totalBlogs = $this->blogRepository->count();
+
+        echo json_encode([
             'data' => $blogs,
+            'draw' => (int)$request->getParam('draw'),
+            'recordsTotal' => $totalBlogs,
+            'recordsFiltered' => $totalBlogs,
         ]);
     }
 

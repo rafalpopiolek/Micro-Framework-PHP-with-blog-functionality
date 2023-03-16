@@ -15,7 +15,7 @@ readonly class BlogRepository implements BlogRepositoryInterface
 
     public function getAll(): array
     {
-        $query = "SELECT * FROM blog;";
+        $query = "SELECT * FROM blog LIMIT 100;";
 
         $stmt = $this->connection->prepare($query);
 
@@ -30,6 +30,37 @@ readonly class BlogRepository implements BlogRepositoryInterface
         }
     }
 
+    public function getPaginated(
+        int $start,
+        int $length,
+        string $search,
+        string $orderBy,
+        string $orderDir = 'ASC'
+    ):
+    array {
+        $orderBy = in_array($orderDir, ['text']) ? $orderBy : 'text';
+        $orderDir = strtolower($orderDir) === 'asc' ? 'asc' : 'desc';
+
+        $query = "SELECT * FROM blog";
+
+        $search = htmlspecialchars($search);
+
+        if (! empty($search)) {
+            $query .= " WHERE text LIKE '%$search%'";
+        }
+
+        $query .= " ORDER BY $orderBy $orderDir LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->connection->prepare($query);
+
+        $stmt->execute([
+            ':limit' => $length,
+            ':offset' => $start,
+        ]);
+
+        return $stmt->fetchAll();
+    }
+
     public function create(string $text): bool
     {
         $query = "INSERT INTO blog(`text`, `userid`) VALUES(:text, :userId);";
@@ -42,5 +73,12 @@ readonly class BlogRepository implements BlogRepositoryInterface
         ]);
 
         return true;
+    }
+
+    public function count(): int
+    {
+        $result = $this->connection->query("SELECT COUNT(*) FROM blog;");
+
+        return $result->fetchColumn();
     }
 }

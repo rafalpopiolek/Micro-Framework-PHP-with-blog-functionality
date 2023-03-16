@@ -56,7 +56,7 @@ final readonly class Application
             die();
         } catch (PDOException|Exception $e) {
             if (isDevelopment($this->config->app['environment'])) {
-                dd($e->getMessage());
+                dd($e);
             }
 
             http_response_code(503);
