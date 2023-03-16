@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Repositories;
 
 use App\DatabaseConnection;
+use App\DataObjects\DataTableParametersDto;
 use App\Repositories\Contracts\BlogRepositoryInterface;
 
 readonly class BlogRepository implements BlogRepositoryInterface
@@ -30,20 +31,14 @@ readonly class BlogRepository implements BlogRepositoryInterface
         }
     }
 
-    public function getPaginated(
-        int $start,
-        int $length,
-        string $search,
-        string $orderBy,
-        string $orderDir = 'ASC'
-    ):
+    public function getPaginated(DataTableParametersDto $params):
     array {
-        $orderBy = in_array($orderDir, ['text']) ? $orderBy : 'text';
-        $orderDir = strtolower($orderDir) === 'asc' ? 'asc' : 'desc';
+        $orderBy = in_array($params->orderDir, ['text']) ? $params->orderBy : 'text';
+        $orderDir = strtolower($params->orderDir) === 'asc' ? 'asc' : 'desc';
 
         $query = "SELECT * FROM blog";
 
-        $search = htmlspecialchars($search);
+        $search = htmlspecialchars($params->search);
 
         if (! empty($search)) {
             $query .= " WHERE text LIKE '%$search%'";
@@ -54,8 +49,8 @@ readonly class BlogRepository implements BlogRepositoryInterface
         $stmt = $this->connection->prepare($query);
 
         $stmt->execute([
-            ':limit' => $length,
-            ':offset' => $start,
+            ':limit' => $params->length,
+            ':offset' => $params->start,
         ]);
 
         return $stmt->fetchAll();
@@ -67,12 +62,10 @@ readonly class BlogRepository implements BlogRepositoryInterface
 
         $stmt = $this->connection->prepare($query);
 
-        $result = $stmt->execute([
+        return $stmt->execute([
             ':text' => $text,
             ':userId' => 1,
         ]);
-
-        return true;
     }
 
     public function count(): int

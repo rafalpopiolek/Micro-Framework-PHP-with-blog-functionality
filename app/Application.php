@@ -33,7 +33,7 @@ final readonly class Application
             );
         } catch (RouteNotFoundException $e) {
             if (isDevelopment($this->config->app['environment'])) {
-                dd($e->getMessage());
+                dd($e);
             }
 
             http_response_code(404);

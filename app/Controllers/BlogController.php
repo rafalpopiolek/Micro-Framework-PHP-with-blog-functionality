@@ -6,12 +6,15 @@ namespace App\Controllers;
 
 use App\Repositories\Contracts\BlogRepositoryInterface;
 use App\Request;
+use App\Services\DataTableService;
 use App\View;
 
-class BlogController
+readonly class BlogController
 {
-    public function __construct(private readonly BlogRepositoryInterface $blogRepository)
-    {
+    public function __construct(
+        private BlogRepositoryInterface $blogRepository,
+        private DataTableService $dataTableService,
+    ) {
     }
 
     public function index(): View
@@ -25,21 +28,15 @@ class BlogController
 
     public function load(Request $request): void
     {
-        $params = $request->getQueryParameters();
+        $params = $this->dataTableService->getQueryParameters($request);
 
-        $blogs = $this->blogRepository->getPaginated(
-            start: (int)$params['start'],
-            length: (int)$params['length'],
-            search: $params['search']['value'],
-            orderBy: $params['columns'][$params['order'][0]['column']]['data'],
-            orderDir: $params['order'][0]['dir'],
-        );
+        $blogs = $this->blogRepository->getPaginated($params);
 
         $totalBlogs = $this->blogRepository->count();
 
         echo json_encode([
             'data' => $blogs,
-            'draw' => (int)$request->getParam('draw'),
+            'draw' => $params->draw,
             'recordsTotal' => $totalBlogs,
             'recordsFiltered' => $totalBlogs,
         ]);

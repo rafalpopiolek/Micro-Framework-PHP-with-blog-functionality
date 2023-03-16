@@ -9,6 +9,7 @@ use App\Repositories\BlogRepository;
 use App\Repositories\Contracts\BlogRepositoryInterface;
 use App\Request;
 use App\Router;
+use App\Services\DataTableService;
 use DI\Container;
 
 /**
