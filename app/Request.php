@@ -13,14 +13,14 @@ readonly class Request
     ) {
     }
 
-    public function getParam(string $name)
+    public function getParam(string $name): mixed
     {
         return $this->get[$name] ?? null;
     }
 
-    public function getPostParam(string $name)
+    public function getPostParam(string $name): mixed
     {
-        return $this->post[$name];
+        return $this->post[$name] ?? null;
     }
 
     public function getQueryParameters(): array
@@ -45,11 +45,6 @@ readonly class Request
         return $this->server['REQUEST_URI'] ?? '/';
     }
 
-    public function getContentType(): ?string
-    {
-        return $this->server['CONTENT_TYPE'] ?? null;
-    }
-
     public function getJson(): array
     {
         if ($this->getContentType() === 'application/json') {
@@ -60,5 +55,10 @@ readonly class Request
         }
 
         return [];
+    }
+
+    public function getContentType(): ?string
+    {
+        return $this->server['CONTENT_TYPE'] ?? null;
     }
 }

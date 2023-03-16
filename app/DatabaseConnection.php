@@ -16,12 +16,18 @@ class DatabaseConnection
 
     public function __construct(array $dbConfig)
     {
+        $config = [
+            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ];
+
         $dsn = $dbConfig['driver'] . ':host=' . $dbConfig['host'] . ';dbname=' . $dbConfig['database'];
         try {
             $this->pdo = new PDO(
                 $dsn,
                 $dbConfig['user'],
-                $dbConfig['password']
+                $dbConfig['password'],
+                $dbConfig['options'] ?? $config,
             );
         } catch (PDOException $e) {
             throw new PDOException($e->getMessage());

@@ -16,28 +16,24 @@ use ReflectionMethod;
 
 class Router
 {
+    private array $routes = [];
+
     public function __construct(
         private readonly Container $container,
+        private readonly Request $request,
     ) {
     }
 
-    private array $routes = [];
+    public function post(string $route, callable|array $action): self
+    {
+        return $this->register(RequestMethod::POST, $route, $action);
+    }
 
     public function register(RequestMethod $reqMethod, string $route, callable|array $action): self
     {
         $this->routes[$reqMethod->value][$route] = $action;
 
         return $this;
-    }
-
-    public function get(string $route, callable|array $action): self
-    {
-        return $this->register(RequestMethod::GET, $route, $action);
-    }
-
-    public function post(string $route, callable|array $action): self
-    {
-        return $this->register(RequestMethod::POST, $route, $action);
     }
 
     public function put(string $route, callable|array $action): self
@@ -57,27 +53,12 @@ class Router
 
     /**
      * @throws RouteNotFoundException
-     * @throws DIContainerException
      * @throws ReflectionException
+     * @throws DIContainerException
      */
     public function resolve(string $requestUri, string $requestMethod): mixed
     {
-        $requestMethod = strtoupper($requestMethod);
-
-        // Get first part of request uri without any GET param
-        $route = explode('?', $requestUri)[0];
-        // Get `action` query param
-        $getAction = $_GET['action'] ?? null;
-
-        if ($getAction) {
-            $route = $route . '?action=' . $getAction;
-        }
-
-        $action = $this->routes[$requestMethod][$route] ?? null;
-
-        if (! $action) {
-            throw new RouteNotFoundException("Route Not Found | 404");
-        }
+        $action = $this->getAction($requestMethod, $requestUri);
 
         if (is_callable($action)) {
             // Try to call this method and inject dependencies
@@ -101,8 +82,8 @@ class Router
             // Try to initialize a class using container
             try {
                 $class = $this->container->get($class);
-            } catch (DependencyException|NotFoundException $e) {
-                throw new RouteNotFoundException("Class `{$class}` Not Found");
+            } catch (DependencyException|NotFoundException) {
+                throw new RouteNotFoundException("Class `$class` Not Found");
             }
 
             if (method_exists($class, $method)) {
@@ -122,7 +103,35 @@ class Router
             }
         }
 
-        throw new RouteNotFoundException("Route Not Found | 404");
+        throw new RouteNotFoundException();
+    }
+
+    /**
+     * @param string $requestMethod
+     * @param string $requestUri
+     * @return mixed
+     * @throws RouteNotFoundException
+     */
+    public function getAction(string $requestMethod, string $requestUri): mixed
+    {
+        $requestMethod = strtoupper($requestMethod);
+
+        // Get first part of request uri without any GET param
+        $route = explode('?', $requestUri)[0];
+        // Get `action` query param
+        $getAction = $this->request->getParam('action');
+
+        if ($getAction) {
+            $route = $route . '?action=' . $getAction;
+        }
+
+        $action = $this->routes[$requestMethod][$route] ?? null;
+
+        if (! $action) {
+            throw new RouteNotFoundException();
+        }
+
+        return $action;
     }
 
     /**
@@ -148,5 +157,10 @@ class Router
             }
         }
         return $dependencies;
+    }
+
+    public function get(string $route, callable|array $action): self
+    {
+        return $this->register(RequestMethod::GET, $route, $action);
     }
 }

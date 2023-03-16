@@ -9,7 +9,7 @@ use Throwable;
 
 class RouteNotFoundException extends Exception
 {
-    public function __construct(string $message = "", int $code = 404, ?Throwable $previous = null)
+    public function __construct(string $message = "Route Not Found | 404", int $code = 404, ?Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

@@ -6,6 +6,7 @@ namespace App;
 
 use App\Exceptions\DIContainerException;
 use App\Exceptions\RouteNotFoundException;
+use App\Exceptions\ViewNotFoundException;
 use Exception;
 use PDOException;
 
@@ -33,6 +34,14 @@ final readonly class Application
         } catch (RouteNotFoundException $e) {
             if (isDevelopment($this->config->app['environment'])) {
                 dd($e->getMessage());
+            }
+
+            http_response_code(404);
+            require VIEW_PATH . '/errors/404.php';
+            die();
+        } catch (ViewNotFoundException $e) {
+            if (isDevelopment($this->config->app['environment'])) {
+                dd($e);
             }
 
             http_response_code(404);
