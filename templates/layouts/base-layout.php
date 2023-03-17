@@ -19,11 +19,9 @@ include_once VIEW_PATH . '/layouts/sections/navigation.php' ?>
     include VIEW_PATH . $this->view . '.php' ?>
 </div>
 
-
 <?php
 include_once VIEW_PATH . '/layouts/sections/footer.php' ?>
 
-<!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"
         integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
@@ -35,6 +33,7 @@ include_once VIEW_PATH . '/layouts/sections/footer.php' ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     $(document).ready(function () {
@@ -56,18 +55,60 @@ include_once VIEW_PATH . '/layouts/sections/footer.php' ?>
                         <button class="ms-2 btn btn-outline-primary btn-sm edit-category-btn">
                             Edit
                         </button>&nbsp;
-                        <form action="/blog/?action=delete" method="POST">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <input type="hidden" name="id" value="${row.id}">
-                            <button type="submit" class="btn btn-outline-primary btn-sm delete-category-btn">
-                                Delete
-                            </button>
-                        </form>
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="id" value="${row.id}">
+                        <button class="btn btn-outline-primary btn-sm delete-btn" data-id="${row.id}">
+                            Delete
+                        </button>
                     </div>
                 `
                 }
             ]
         });
+
+        document.querySelector('#blogsTable').addEventListener('click', async function (event) {
+            const deleteButton = event.target.closest('.delete-btn')
+
+            if (deleteButton) {
+                const id = deleteButton.getAttribute('data-id')
+
+                const response = await fetch('/blog/?action=delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({id}),
+                });
+
+                const data = await response.json();
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+
+                if (data.status === 200) {
+                    deleteButton.closest('tr').remove();
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Blog deleted successfully'
+                    });
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Cannot delete blog'
+                    });
+                }
+            }
+        })
+
     });
 </script>
 </body>

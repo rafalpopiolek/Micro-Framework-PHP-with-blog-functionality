@@ -54,14 +54,21 @@ readonly class BlogController
         return View::make('blog/index');
     }
 
-    public function destroy(Request $request): View
+    public function destroy(Request $request): void
     {
         if ($this->blogRepository->delete(
-            (int)$request->postParam('id')
-        )) {
-            return View::make('blog/index');
+            (int)$request->getJson()['id']
+        )
+        ) {
+            $response = [
+                'status' => 200,
+            ];
+        } else {
+            $response = [
+                'status' => 409,
+            ];
         }
 
-        return View::make('blog/index');
+        echo json_encode($response);
     }
 }
