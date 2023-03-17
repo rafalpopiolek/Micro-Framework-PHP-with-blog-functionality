@@ -31,9 +31,9 @@ readonly class BlogRepository implements BlogRepositoryInterface
         }
     }
 
-    public function getPaginated(DataTableParametersDto $params):
-    array {
-        $orderBy = in_array($params->orderDir, ['text']) ? $params->orderBy : 'text';
+    public function getPaginated(DataTableParametersDto $params): array
+    {
+        $orderBy = $params->orderDir == 'text' ? $params->orderBy : 'text';
         $orderDir = strtolower($params->orderDir) === 'asc' ? 'asc' : 'desc';
 
         $query = "SELECT * FROM blog";

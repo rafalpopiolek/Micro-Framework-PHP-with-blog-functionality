@@ -9,6 +9,10 @@ use App\Request;
 
 class DataTableService
 {
+    /**
+     * Get parameters that are required for datatables
+     * Store them in the DTO
+     */
     public function getQueryParameters(Request $request): DataTableParametersDto
     {
         $params = $request->getQueryParameters();

@@ -7,9 +7,10 @@ use App\Config;
 use App\DatabaseConnection;
 use App\Repositories\BlogRepository;
 use App\Repositories\Contracts\BlogRepositoryInterface;
+use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\UserRepository;
 use App\Request;
 use App\Router;
-use App\Services\DataTableService;
 use DI\Container;
 
 /**
@@ -47,4 +48,5 @@ return [
         );
     },
     BlogRepositoryInterface::class => Di\autowire(BlogRepository::class),
+    UserRepositoryInterface::class => Di\autowire(UserRepository::class),
 ];

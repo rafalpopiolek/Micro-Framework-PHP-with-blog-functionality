@@ -22,6 +22,9 @@ readonly class BlogController
         return View::make('blog/index');
     }
 
+    /**
+     * This function returns data that are required for datatable
+     */
     public function load(Request $request): void
     {
         $params = $this->dataTableService->getQueryParameters($request);
@@ -43,15 +46,11 @@ readonly class BlogController
         return View::make('blog/create');
     }
 
-    public function store(Request $request): View
+    public function store(Request $request): void
     {
-        if ($this->blogRepository->create(
-            $request->postParam('text')
-        )) {
-            return View::make('blog/index');
-        }
+        $this->blogRepository->create($request->postParam('text'));
 
-        return View::make('blog/index');
+        redirect_to('/blog', 200);
     }
 
     public function destroy(Request $request): void

@@ -37,6 +37,7 @@ include_once VIEW_PATH . '/layouts/sections/footer.php' ?>
 
 <script>
     $(document).ready(function () {
+        // Fetch all blogs for datatable
         $('#blogsTable').DataTable({
             serverSide: true,
             ajax: '/blog/?action=load',
@@ -66,6 +67,7 @@ include_once VIEW_PATH . '/layouts/sections/footer.php' ?>
             ]
         });
 
+        // Delete blog
         document.querySelector('#blogsTable').addEventListener('click', async function (event) {
             const deleteButton = event.target.closest('.delete-btn')
 

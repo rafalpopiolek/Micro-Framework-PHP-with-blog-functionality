@@ -22,7 +22,30 @@
             </li>
         </ul>
         <ul class="navbar-nav">
-            <li class="nav-link">Login</li>
+            <?php
+            if (! isAuth()): ?>
+                <li class="nav-link">
+                    <a href="/blog/?action=login" class="text-dark">
+                        <button class="btn btn-sm btn-light border border-dark rounded">Login</button>
+                    </a>
+                    <a href="/blog/?action=register" class="text-dark">
+                        <button class="btn btn-sm btn-light border border-dark rounded">Register</button>
+                    </a>
+                </li>
+            <?php
+            endif; ?>
+
+            <?php
+            if (isAuth()): ?>
+                <li class="nav-link">
+                    <form action="/blog/?action=logout" method="POST">
+                        <button type="submit" class="btn btn-light border border-dark rounded">
+                            Logout
+                        </button>
+                    </form>
+                </li>
+            <?php
+            endif; ?>
         </ul>
     </div>
 </nav>
