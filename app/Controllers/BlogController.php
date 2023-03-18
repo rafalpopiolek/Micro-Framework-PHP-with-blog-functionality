@@ -66,8 +66,8 @@ readonly class BlogController
             $request->postParam('text')
         );
 
-        if (is_array($text)) {
-            $this->session->put('errors', $text);
+        if (! empty($this->validator->errors)) {
+            $this->session->put('errors', $this->validator->errors);
 
             redirect_to('/blog/?action=create', 403);
         }

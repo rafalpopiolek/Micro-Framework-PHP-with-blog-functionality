@@ -4,6 +4,9 @@
             <div class="card">
                 <div class="card-body">
                     <h3 class="card-title text-center mb-5">Login</h3>
+
+                    <?php include_once VIEW_PATH . '/partials/errors.php';  ?>
+
                     <form action="/blog/?action=login" method="POST">
 
                         <div class="form-floating mb-3">
