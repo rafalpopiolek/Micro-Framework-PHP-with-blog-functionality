@@ -4,8 +4,10 @@ declare(strict_types = 1);
 
 namespace App;
 
+use App\Contracts\SessionInterface;
 use App\Exceptions\DIContainerException;
 use App\Exceptions\RouteNotFoundException;
+use App\Exceptions\SessionException;
 use App\Exceptions\ViewNotFoundException;
 use Exception;
 use PDOException;
@@ -15,8 +17,11 @@ final readonly class Application
     public function __construct(
         private Router $router,
         private Config $config,
+        private SessionInterface $session,
         private array $request,
+
     ) {
+        $this->session->start();
         defineRoutes($this->router);
     }
 
@@ -36,7 +41,7 @@ final readonly class Application
                 dd($e);
             }
             showErrorPage('/errors/404.php', 404);
-        } catch (PDOException|Exception $e) {
+        } catch (SessionException|PDOException|Exception $e) {
             if (isDevelopment($this->config->app['environment'])) {
                 dd($e);
             }

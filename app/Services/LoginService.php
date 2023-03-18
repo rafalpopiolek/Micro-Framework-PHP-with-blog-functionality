@@ -4,12 +4,15 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
+use App\Contracts\SessionInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 
 readonly class LoginService
 {
-    public function __construct(private UserRepositoryInterface $userRepository)
-    {
+    public function __construct(
+        private UserRepositoryInterface $userRepository,
+        private SessionInterface $session,
+    ) {
     }
 
     public function logIn(string $username, string $password): bool
@@ -24,8 +27,9 @@ readonly class LoginService
             // Remove password before adding to session
             unset($user['password']);
             $user['username'] = htmlspecialchars($user['username']);
+
             // Store user information for quick access
-            $_SESSION['user'] = $user;
+            $this->session->put('user', $user);
 
             return true;
         }
@@ -35,9 +39,6 @@ readonly class LoginService
 
     public function logout(): void
     {
-        if (isset($_SESSION['user'])) {
-            session_unset();
-            session_destroy();
-        }
+        $this->session->forget('user');
     }
 }

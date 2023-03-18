@@ -16,4 +16,7 @@ return [
         'password' => 'root',
         'database' => 'venture',
     ],
+    'session' => [
+        'name' => 'Venture-Labs_Session',
+    ]
 ];

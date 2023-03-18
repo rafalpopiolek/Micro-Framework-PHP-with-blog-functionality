@@ -2,8 +2,6 @@
 
 declare(strict_types = 1);
 
-// In this file I put all helper functions
-
 use App\Enums\Environment;
 use App\Enums\UserRoles;
 

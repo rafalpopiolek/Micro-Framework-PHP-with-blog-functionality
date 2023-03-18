@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controllers;
 
+use App\Contracts\SessionInterface;
 use App\Repositories\Contracts\BlogRepositoryInterface;
 use App\Request;
 use App\Services\BlogService;
@@ -15,6 +16,7 @@ readonly class BlogController
 {
     public function __construct(
         private BlogRepositoryInterface $blogRepository,
+        private SessionInterface $session,
         private DataTableService $dataTableService,
         private BlogService $blogService,
         private Validator $validator,
@@ -65,13 +67,14 @@ readonly class BlogController
         );
 
         if (is_array($text)) {
-            $_SESSION['errors'] = $text;
+            $this->session->put('errors', $text);
+
             redirect_to('/blog/?action=create', 403);
         }
 
         $this->blogRepository->create($text);
 
-        $_SESSION['message'] = "Blog created successfully";
+        $this->session->put('message', 'Blog created successfully');
 
         redirect_to('/blog', 200);
     }

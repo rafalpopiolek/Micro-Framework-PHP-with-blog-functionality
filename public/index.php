@@ -2,10 +2,6 @@
 
 declare(strict_types = 1);
 
-if (! isset($_SESSION)) {
-    session_start();
-}
-
 const BASE_PATH = __DIR__ . '/../';
 const VIEW_PATH = __DIR__ . '/../templates/';
 

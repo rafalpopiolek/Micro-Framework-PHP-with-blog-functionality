@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 use App\Application;
 use App\Config;
+use App\Contracts\SessionInterface;
 use App\DatabaseConnection;
 use App\Repositories\BlogRepository;
 use App\Repositories\Contracts\BlogRepositoryInterface;
@@ -11,6 +12,7 @@ use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\UserRepository;
 use App\Request;
 use App\Router;
+use App\Session;
 use DI\Container;
 
 /**
@@ -21,6 +23,7 @@ return [
         return new Application(
             $container->get(Router::class),
             $container->get(Config::class),
+            $container->get(SessionInterface::class),
             // Make PUT, PATCH or DELETE request by adding <input name="_method" value"REQUEST_TYPE">
             [
                 'uri' => $_SERVER['REQUEST_URI'],
@@ -49,4 +52,5 @@ return [
     },
     BlogRepositoryInterface::class => Di\autowire(BlogRepository::class),
     UserRepositoryInterface::class => Di\autowire(UserRepository::class),
+    SessionInterface::class => Di\autowire(Session::class),
 ];
