@@ -35,8 +35,6 @@ class Validator
 
     public function validateName(string $value, int $min = 1, int $max = 45): string|array
     {
-        $value = htmlspecialchars($value);
-
         if (empty($value)) {
             $this->errors['username'][] = 'The username is required';
         }
@@ -56,10 +54,8 @@ class Validator
         return $value;
     }
 
-    public function validatePassword(string $password): string|array
+    public function validatePassword(string $value): string|array
     {
-        $value = htmlspecialchars($password);
-
         if (empty($value)) {
             $this->errors['password'][] = 'The password is required';
         }

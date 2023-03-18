@@ -52,10 +52,16 @@ readonly class AuthController
 
     public function register(Request $request): void
     {
-        if ($this->registerService->register(
-            $request->postParam('username'),
-            $request->postParam('password')
-        )) {
+        $username = $this->validator->validateName($request->postParam('username'));
+        $password = $this->validator->validatePassword($request->postParam('password'));
+
+        if (! empty($this->validator->errors)) {
+            $this->session->put('errors', $this->validator->errors);
+
+            redirect_to('/blog/?action=register', 403);
+        }
+
+        if ($this->registerService->register($username, $password)) {
             redirect_to('/blog/?action=login', 200);
         }
 

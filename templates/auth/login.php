@@ -5,7 +5,7 @@
                 <div class="card-body">
                     <h3 class="card-title text-center mb-5">Login</h3>
 
-                    <?php include_once VIEW_PATH . '/partials/errors.php';  ?>
+                    <?php include_once VIEW_PATH . '/partials/errors.php'; ?>
 
                     <form action="/blog/?action=login" method="POST">
 
@@ -25,9 +25,15 @@
                             <button type="submit" class="btn btn-outline-primary px-5 my-2">Log in</button>
                         </div>
                     </form>
-                    <a href="/blog/?action=register" class="d-flex mt-3">
-                        Don't have an account? Create one
-                    </a>
+                    <div class="d-flex justify-content-between">
+                        <a href="/blog/?action=register" class="d-flex mt-3">
+                            Don't have an account? Create one
+                        </a>
+
+                        <a href="/blog" class="d-flex mt-3">
+                            Home Page
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

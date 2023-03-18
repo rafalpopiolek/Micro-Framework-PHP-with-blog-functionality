@@ -27,6 +27,9 @@ readonly class LoginService
             // Remove password before adding to session
             unset($user['password']);
 
+            // Protect app from displaying data that the user has provided
+            $user['username'] = htmlspecialchars($user['username']);
+
             // Store user information for quick access
             $this->session->put('user', $user);
 
