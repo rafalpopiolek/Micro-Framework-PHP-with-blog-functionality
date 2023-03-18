@@ -48,3 +48,10 @@ function getCurrentUser(): ?array
 {
     return $_SESSION['user'] ?? null;
 }
+
+function showErrorPage(string $path, int $code): void
+{
+    http_response_code($code);
+    require VIEW_PATH . $path;
+    die();
+}

@@ -23,6 +23,7 @@ readonly class LoginService
 
             // Remove password before adding to session
             unset($user['password']);
+            $user['username'] = htmlspecialchars($user['username']);
             // Store user information for quick access
             $_SESSION['user'] = $user;
 

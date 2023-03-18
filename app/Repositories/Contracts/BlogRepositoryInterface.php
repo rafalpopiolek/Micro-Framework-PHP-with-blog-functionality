@@ -12,7 +12,7 @@ interface BlogRepositoryInterface
 
     public function create(string $text): bool;
 
-    public function getPaginated(DataTableParametersDto $params);
+    public function getPaginated(DataTableParametersDto $params): array;
 
     public function count(): int;
 

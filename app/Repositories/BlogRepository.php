@@ -63,7 +63,7 @@ readonly class BlogRepository implements BlogRepositoryInterface
         $stmt = $this->connection->prepare($query);
 
         return $stmt->execute([
-            ':text' => $text,
+            ':text' => htmlspecialchars($text),
             ':userId' => getCurrentUser()['userid'],
         ]);
     }

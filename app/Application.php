@@ -31,37 +31,16 @@ final readonly class Application
                 requestUri: $this->request['uri'],
                 requestMethod: $this->request['method']
             );
-        } catch (RouteNotFoundException $e) {
+        } catch (RouteNotFoundException|ViewNotFoundException|DIContainerException $e) {
             if (isDevelopment($this->config->app['environment'])) {
                 dd($e);
             }
-
-            http_response_code(404);
-            require VIEW_PATH . '/errors/404.php';
-            die();
-        } catch (ViewNotFoundException $e) {
-            if (isDevelopment($this->config->app['environment'])) {
-                dd($e);
-            }
-
-            http_response_code(404);
-            require VIEW_PATH . '/errors/404.php';
-            die();
-        } catch (DIContainerException $e) {
-            if (isDevelopment($this->config->app['environment'])) {
-                dd($e);
-            }
-            http_response_code(404);
-            require VIEW_PATH . '/errors/404.php';
-            die();
+            showErrorPage('/errors/404.php', 404);
         } catch (PDOException|Exception $e) {
             if (isDevelopment($this->config->app['environment'])) {
                 dd($e);
             }
-
-            http_response_code(503);
-            require VIEW_PATH . '/errors/server-error.php';
-            die();
+            showErrorPage('/errors/server-error.php', 503);
         }
     }
 }

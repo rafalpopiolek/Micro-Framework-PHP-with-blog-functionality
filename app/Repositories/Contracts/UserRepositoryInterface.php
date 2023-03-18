@@ -7,7 +7,7 @@ namespace App\Repositories\Contracts;
 interface UserRepositoryInterface
 {
 
-    public function findByName(string $username);
+    public function findByName(string $username): mixed;
 
     public function register(string $username, string $password, string $permission, string $readonly): bool;
 

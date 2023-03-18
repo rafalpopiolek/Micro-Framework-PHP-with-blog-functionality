@@ -13,7 +13,7 @@ readonly class UserRepository implements UserRepositoryInterface
     {
     }
 
-    public function findByName(string $username)
+    public function findByName(string $username): mixed
     {
         $query = "SELECT userid, username, password, permission, readonly FROM user WHERE username = ?";
         $stmt = $this->connection->prepare($query);
