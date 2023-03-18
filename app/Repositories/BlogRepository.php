@@ -41,7 +41,7 @@ readonly class BlogRepository implements BlogRepositoryInterface
         $search = htmlspecialchars($params->search);
 
         if (! empty($search)) {
-            $query .= " WHERE text LIKE '%$search%'";
+            $query .= " WHERE text LIKE '%$search%' OR u.username LIKE '%$search%'";
         }
 
         $query .= " ORDER BY $orderBy $orderDir LIMIT :limit OFFSET :offset";
