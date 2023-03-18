@@ -9,9 +9,9 @@ if (! isset($_SESSION)) {
 const BASE_PATH = __DIR__ . '/../';
 const VIEW_PATH = __DIR__ . '/../templates/';
 
-require BASE_PATH . '/vendor/autoload.php';
-require BASE_PATH . '/routes/web.php';
-require BASE_PATH . '/helpers.php';
+require_once BASE_PATH . '/vendor/autoload.php';
+require_once BASE_PATH . '/routes/web.php';
+require_once BASE_PATH . '/helpers.php';
 
 use App\Application;
 use App\Enums\Environment;
@@ -24,7 +24,7 @@ if (isDevelopment(Environment::LOCAL->value)) {
 }
 
 // Get container
-$container = require BASE_PATH . 'container/container.php';
+$container = require_once BASE_PATH . 'container/container.php';
 
 // Get Application from DI container
 /** @var Application $app */

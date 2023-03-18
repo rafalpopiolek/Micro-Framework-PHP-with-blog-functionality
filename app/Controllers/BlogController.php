@@ -50,6 +50,7 @@ readonly class BlogController
     {
         $this->blogRepository->create($request->postParam('text'));
 
+        $_SESSION['message'] = "Blog created successfully";
         redirect_to('/blog', 200);
     }
 
