@@ -6,7 +6,9 @@ namespace App\Controllers;
 
 use App\Repositories\Contracts\BlogRepositoryInterface;
 use App\Request;
+use App\Services\BlogService;
 use App\Services\DataTableService;
+use App\Validators\Validator;
 use App\View;
 
 readonly class BlogController
@@ -14,6 +16,8 @@ readonly class BlogController
     public function __construct(
         private BlogRepositoryInterface $blogRepository,
         private DataTableService $dataTableService,
+        private BlogService $blogService,
+        private Validator $validator,
     ) {
     }
 
@@ -43,31 +47,47 @@ readonly class BlogController
 
     public function create(): View
     {
+        if (! isAuth()) {
+            redirect_to('/blog', 401);
+        }
+
         return View::make('blog/create');
     }
 
     public function store(Request $request): void
     {
-        $this->blogRepository->create($request->postParam('text'));
+        if (! isAuth()) {
+            redirect_to('/blog', 401);
+        }
+
+        $text = $this->validator->validateString(
+            $request->postParam('text')
+        );
+
+        if (is_array($text)) {
+            $_SESSION['errors'] = $text;
+            redirect_to('/blog/?action=create', 403);
+        }
+
+        $this->blogRepository->create($text);
 
         $_SESSION['message'] = "Blog created successfully";
+
         redirect_to('/blog', 200);
     }
 
     public function destroy(Request $request): void
     {
-        if ($this->blogRepository->delete(
-            (int)$request->getJson()['id']
-        )
-        ) {
-            $response = [
-                'status' => 200,
-            ];
-        } else {
-            $response = [
-                'status' => 409,
-            ];
+        $blogId = (int)$request->getJson()['id'];
+
+        if (! $this->blogService->canDelete($blogId)) {
+            echo json_encode([
+                'status' => 401
+            ]);
+            exit;
         }
+
+        $response = $this->blogRepository->delete($blogId) ? ['status' => 200] : ['status' => 409];
 
         echo json_encode($response);
     }

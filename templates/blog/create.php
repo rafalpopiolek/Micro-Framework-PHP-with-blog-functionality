@@ -1,4 +1,7 @@
 <div class="container">
+
+    <?php include_once VIEW_PATH . '/partials/errors.php';  ?>
+
     <form action="/blog" method="POST">
         <div class="form-group">
             <div>
@@ -7,9 +10,7 @@
                           class="form-control"
                           id="text"
                           rows="3"
-                          required
-                          minlength="5"
-                          maxlength="2000"></textarea>
+                ></textarea>
             </div>
 
             <div class="d-flex justify-content-end mt-3">

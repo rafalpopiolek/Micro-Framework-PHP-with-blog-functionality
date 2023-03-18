@@ -83,4 +83,17 @@ readonly class BlogRepository implements BlogRepositoryInterface
             ':id' => $id
         ]);
     }
+
+    public function isAuthor(int $blogId): bool
+    {
+        if (! isAuth()) {
+            return false;
+        }
+
+        $stmt = $this->connection->prepare("SELECT userid FROM blog WHERE id = ?");
+        $stmt->execute([$blogId]);
+        $userId = $stmt->fetchColumn();
+
+        return $userId === (int)getCurrentUser()['userid'];
+    }
 }

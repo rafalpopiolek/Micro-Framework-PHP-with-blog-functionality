@@ -4,6 +4,9 @@ declare(strict_types = 1);
 
 // In this file I put all helper functions
 
+use App\Enums\Environment;
+use App\Enums\UserRoles;
+
 function dd(mixed $value): void
 {
     echo "<pre style='border: 1px solid black; background-color: lightgray; padding: 5px;'>";
@@ -14,7 +17,7 @@ function dd(mixed $value): void
 
 function isDevelopment(string $environment): bool
 {
-    if ($environment === \App\Enums\Environment::LOCAL->value) {
+    if ($environment === Environment::LOCAL->value) {
         return true;
     }
     return false;
@@ -38,7 +41,10 @@ function isAuth(): bool
 function isAdmin(): bool
 {
     if (isAuth()) {
-        return $_SESSION['user']['permission'] === 'admin';
+        if ($_SESSION['user']['permission'] === UserRoles::ADMIN->value) {
+            return true;
+        }
+        return false;
     }
 
     return false;
@@ -52,6 +58,6 @@ function getCurrentUser(): ?array
 function showErrorPage(string $path, int $code): void
 {
     http_response_code($code);
-    require VIEW_PATH . $path;
+    require_once VIEW_PATH . $path;
     die();
 }

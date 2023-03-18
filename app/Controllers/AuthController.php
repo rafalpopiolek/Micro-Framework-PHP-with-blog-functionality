@@ -56,6 +56,6 @@ readonly class AuthController
     {
         $this->loginService->logout();
 
-        redirect_to('/blog/?action=login', 200);
+        redirect_to('/blog', 200);
     }
 }

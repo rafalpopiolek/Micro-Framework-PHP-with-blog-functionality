@@ -49,9 +49,6 @@ include_once VIEW_PATH . '/layouts/sections/footer.php' ?>
                     sortable: false,
                     data: row => `
                     <div class="d-flex flex-">
-                        <button class="ms-2 btn btn-outline-primary btn-sm edit-category-btn">
-                            Edit
-                        </button>&nbsp;
                         <input type="hidden" name="_method" value="DELETE">
                         <input type="hidden" name="id" value="${row.id}">
                         <button class="btn btn-outline-primary btn-sm delete-btn" data-id="${row.id}">
