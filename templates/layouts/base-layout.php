@@ -42,12 +42,8 @@ include_once VIEW_PATH . '/layouts/sections/footer.php' ?>
             serverSide: true,
             ajax: '/blog/?action=load',
             orderMulti: false,
-            order: [[1, 'DESC']],
             columns: [
-                {
-                    sortable: false,
-                    data: "userid",
-                },
+                {data: "username"},
                 {data: "text"},
                 {
                     sortable: false,

@@ -11,13 +11,12 @@
         <table id="blogsTable">
             <thead>
             <tr>
-                <th>User ID</th>
+                <th>Username</th>
                 <th>Text</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody></tbody>
         </table>
-
     </div>
 </div>

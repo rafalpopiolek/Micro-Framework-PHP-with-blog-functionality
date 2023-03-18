@@ -33,10 +33,10 @@ readonly class BlogRepository implements BlogRepositoryInterface
 
     public function getPaginated(DataTableParametersDto $params): array
     {
-        $orderBy = $params->orderDir == 'text' ? $params->orderBy : 'text';
+        $orderBy = in_array($params->orderBy, ['text', 'username']) ? $params->orderBy : 'text';
         $orderDir = strtolower($params->orderDir) === 'asc' ? 'asc' : 'desc';
 
-        $query = "SELECT * FROM blog";
+        $query = "SELECT b.id, b.text, u.username FROM blog b INNER JOIN user u on b.userid = u.userid";
 
         $search = htmlspecialchars($params->search);
 
@@ -64,7 +64,7 @@ readonly class BlogRepository implements BlogRepositoryInterface
 
         return $stmt->execute([
             ':text' => $text,
-            ':userId' => 1,
+            ':userId' => getCurrentUser()['userid'],
         ]);
     }
 
