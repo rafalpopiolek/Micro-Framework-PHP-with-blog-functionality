@@ -16,6 +16,6 @@ To run this application follow this steps:
 
 User account data:
 ```
-username -> `username`
+username -> `admin`
 password -> `password`
 ```
