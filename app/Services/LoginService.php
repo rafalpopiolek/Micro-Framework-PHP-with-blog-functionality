@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\Contracts\SessionInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Request;
+use App\Validators\LoginValidator;
 
 readonly class LoginService
 {
@@ -42,5 +44,27 @@ readonly class LoginService
     public function logout(): void
     {
         $this->session->forget('user');
+    }
+
+    public function validate(Request $request): LoginValidator
+    {
+        return new LoginValidator(
+            data: [
+                'username' => $request->postParam('username'),
+                'password' => $request->postParam('password'),
+            ],
+            validationFields: [
+                'username' => [
+                    'required' => true,
+                    'min' => 3,
+                    'max' => 45,
+                ],
+                'password' => [
+                    'required' => true,
+                    'min' => 5,
+                    'max' => 255,
+                ],
+            ]
+        );
     }
 }

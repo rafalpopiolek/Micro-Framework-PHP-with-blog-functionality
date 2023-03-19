@@ -9,7 +9,6 @@ use App\Repositories\Contracts\BlogRepositoryInterface;
 use App\Request;
 use App\Services\BlogService;
 use App\Services\DataTableService;
-use App\Validators\Validator;
 use App\View;
 
 readonly class BlogController
@@ -19,7 +18,6 @@ readonly class BlogController
         private SessionInterface $session,
         private DataTableService $dataTableService,
         private BlogService $blogService,
-        private Validator $validator,
     ) {
     }
 
@@ -62,17 +60,17 @@ readonly class BlogController
             redirect_to('/blog', 401);
         }
 
-        $text = $this->validator->validateString(
-            $request->postParam('text')
-        );
+        $validator = $this->blogService->validate($request);
 
-        if (! empty($this->validator->errors)) {
-            $this->session->put('errors', $this->validator->errors);
+        if ($validator->fails()) {
+            $this->session->put('errors', $validator->getErrors());
 
             redirect_to('/blog/?action=create', 403);
         }
 
-        $this->blogRepository->create($text);
+        $data = $validator->getValidated();
+
+        $this->blogRepository->create($data['text']);
 
         $this->session->put('message', 'Blog created successfully');
 

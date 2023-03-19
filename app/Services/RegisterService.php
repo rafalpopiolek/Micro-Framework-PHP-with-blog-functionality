@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\Enums\UserRoles;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Request;
+use App\Validators\LoginValidator;
 
 readonly class RegisterService
 {
@@ -25,4 +27,31 @@ readonly class RegisterService
 
         return false;
     }
+
+    /**
+     * Because register form looks the same as Login
+     * I decided to use the same validator as in login service
+     */
+    public function validate(Request $request): LoginValidator
+    {
+        return new LoginValidator(
+            data: [
+                'username' => $request->postParam('username'),
+                'password' => $request->postParam('password'),
+            ],
+            validationFields: [
+                'username' => [
+                    'required' => true,
+                    'min' => 3,
+                    'max' => 45,
+                ],
+                'password' => [
+                    'required' => true,
+                    'min' => 5,
+                    'max' => 255,
+                ],
+            ]
+        );
+    }
+
 }

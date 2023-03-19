@@ -5,6 +5,8 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\Repositories\Contracts\BlogRepositoryInterface;
+use App\Request;
+use App\Validators\BlogValidator;
 
 readonly class BlogService
 {
@@ -19,5 +21,21 @@ readonly class BlogService
         }
 
         return true;
+    }
+
+    public function validate(Request $request): BlogValidator
+    {
+        return new BlogValidator(
+            data: [
+                'text' => $request->postParam('text'),
+            ],
+            validationFields: [
+                'text' => [
+                    'required' => true,
+                    'min' => 6,
+                    'max' => 2000,
+                ]
+            ]
+        );
     }
 }

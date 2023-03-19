@@ -8,7 +8,6 @@ use App\Contracts\SessionInterface;
 use App\Request;
 use App\Services\LoginService;
 use App\Services\RegisterService;
-use App\Validators\Validator;
 use App\View;
 
 readonly class AuthController
@@ -16,7 +15,6 @@ readonly class AuthController
     public function __construct(
         private LoginService $loginService,
         private RegisterService $registerService,
-        private Validator $validator,
         private SessionInterface $session,
     ) {
     }
@@ -33,16 +31,17 @@ readonly class AuthController
 
     public function login(Request $request): void
     {
-        $username = $this->validator->validateName($request->postParam('username'));
-        $password = $this->validator->validatePassword($request->postParam('password'));
+        $validator = $this->loginService->validate($request);
 
-        if (! empty($this->validator->errors)) {
-            $this->session->put('errors', $this->validator->errors);
+        if ($validator->fails()) {
+            $this->session->put('errors', $validator->getErrors());
 
             redirect_to('/blog/?action=login', 403);
         }
 
-        if ($this->loginService->logIn($username, $password)) {
+        $data = $validator->getValidated();
+
+        if ($this->loginService->logIn($data['username'], $data['password'])) {
             redirect_to('/blog', 200);
         } else {
             $this->session->put('errors', 'Bad credentials');
@@ -52,16 +51,17 @@ readonly class AuthController
 
     public function register(Request $request): void
     {
-        $username = $this->validator->validateName($request->postParam('username'));
-        $password = $this->validator->validatePassword($request->postParam('password'));
+        $validator = $this->registerService->validate($request);
 
-        if (! empty($this->validator->errors)) {
-            $this->session->put('errors', $this->validator->errors);
+        if ($validator->fails()) {
+            $this->session->put('errors', $validator->getErrors());
 
             redirect_to('/blog/?action=register', 403);
         }
 
-        if ($this->registerService->register($username, $password)) {
+        $data = $validator->getValidated();
+
+        if ($this->registerService->register($data['username'], $data['password'])) {
             redirect_to('/blog/?action=login', 200);
         }
 

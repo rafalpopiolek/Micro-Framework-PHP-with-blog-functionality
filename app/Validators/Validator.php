@@ -4,66 +4,91 @@ declare(strict_types = 1);
 
 namespace App\Validators;
 
-class Validator
+abstract class Validator
 {
-    public array $errors = [];
+    protected array $fieldsToValidate = [];
 
-    public function validateString(string $value, int $min = 5, int $max = 2000): string|array
-    {
-        $value = htmlspecialchars($value);
+    protected array $errors = [];
 
-        $value = trim($value);
-
-        if (empty($value)) {
-            $this->errors['text'][] = 'The text is required';
-        }
-
-        if (strlen($value) < $min) {
-            $this->errors['text'][] = "The text must contain a min of $min characters";
-        }
-
-        if (strlen($value) > $max) {
-            $this->errors['text'][] = "The text must contain a maximum of $max characters";
-        }
-
-        if (! empty($this->errors)) {
-            return $this->errors;
-        }
-
-        return $value;
+    public function __construct(
+        protected array $data,
+        protected array $validationFields,
+    ) {
+        $this->validate();
     }
 
-    public function validateName(string $value, int $min = 1, int $max = 45): string|array
+    public function validate(): void
     {
-        if (empty($value)) {
-            $this->errors['username'][] = 'The username is required';
-        }
+        foreach ($this->validationFields as $fieldName => $rules) {
+            foreach ($rules as $ruleName => $ruleValue) {
+                if (! in_array($fieldName, $this->fieldsToValidate)) {
+                    $this->addError($fieldName, "Unknown validation name: $ruleName");
+                    continue;
+                }
 
-        if (strlen($value) < $min) {
-            $this->errors['username'][] = "The username must contain a min of $min characters";
-        }
+                $methodName = $ruleName . 'Rule';
+                if (! method_exists(self::class, $methodName)) {
+                    $this->addError($fieldName, "Rule doesn't exist: $methodName");
+                    continue;
+                }
 
-        if (strlen($value) > $max) {
-            $this->errors['username'][] = "The username must contain a maximum of $max characters";
+                $this->$methodName($fieldName, $ruleValue);
+            }
         }
-
-        if (! empty($this->errors)) {
-            return $this->errors;
-        }
-
-        return $value;
     }
 
-    public function validatePassword(string $value): string|array
+    protected function addError(string $fieldName, string $message): void
     {
-        if (empty($value)) {
-            $this->errors['password'][] = 'The password is required';
-        }
+        $this->errors[$fieldName][] = $message;
+    }
 
-        if (! empty($this->errors)) {
+    public function fails(): bool
+    {
+        return ! empty($this->errors);
+    }
+
+    public function getErrors(): array
+    {
+        if ($this->fails()) {
             return $this->errors;
+        } else {
+            return [];
+        }
+    }
+
+    public function getValidated(): array
+    {
+        if (! $this->fails()) {
+            $validated = [];
+
+            foreach ($this->fieldsToValidate as $item) {
+                $validated[$item] = $this->data[$item];
+            }
+
+            return $validated;
         }
 
-        return $value;
+        return [];
+    }
+
+    protected function requiredRule(string $fieldName, bool $ruleValue): void
+    {
+        if ($ruleValue && empty($this->data[$fieldName])) {
+            $this->addError($fieldName, "The $fieldName field is required");
+        }
+    }
+
+    protected function minRule(string $fieldName, int $min): void
+    {
+        if (isset($this->data[$fieldName]) && mb_strlen($this->data[$fieldName]) < $min) {
+            $this->addError($fieldName, "The $fieldName field must be at least $min characters long");
+        }
+    }
+
+    protected function maxRule(string $fieldName, int $max): void
+    {
+        if (isset($this->data[$fieldName]) && mb_strlen($this->data[$fieldName]) > $max) {
+            $this->addError($fieldName, "The $fieldName field cannot be longer than $max characters");
+        }
     }
 }
